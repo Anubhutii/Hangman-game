@@ -18,43 +18,56 @@ const SetupScreen = ({ onStart }) => {
       className="
         w-full max-w-sm
         text-center
-        px-6 py-10
-        md:bg-white/10 md:backdrop-blur-xl
+        px-8 py-12
+
+        md:bg-white/10
+        md:backdrop-blur-xl
         md:border md:border-white/20
         md:rounded-3xl
-        md:shadow-[0_20px_60px_rgba(0,0,0,0.35)]
+        md:shadow-[0_30px_80px_rgba(0,0,0,0.45)]
       "
     >
       {/* TITLE */}
-      <h1 className="text-xs tracking-widest text-gray-400 mb-2">PLAYER 1</h1>
+      <h1 className="text-xs tracking-[0.25em] text-gray-400 mb-2">PLAYER 1</h1>
 
-      <p className="text-sm text-gray-500 mb-8">Set the secret word</p>
+      <p className="text-sm text-gray-500 mb-10">Set the secret word</p>
 
       {/* INPUT */}
-      <input
-        type="text"
-        value={word}
-        onChange={(e) => setWord(e.target.value)}
-        placeholder="Enter a word!"
-        className="
-          w-full px-4 py-3 mb-6
-          rounded-xl
-          bg-[#1f222d]
-          text-white text-center tracking-widest
-          placeholder-gray-600
-          focus:outline-none
-          focus:ring-2 focus:ring-blue-500
-        "
-      />
+      <div className="relative mb-8">
+        <input
+          type="text"
+          value={word}
+          onChange={(e) => setWord(e.target.value)}
+          placeholder="Enter a word"
+          className="
+            w-full px-4 py-4
+            rounded-2xl
+            bg-black/40
+            text-white text-center tracking-widest
+            placeholder-gray-600
+
+            border border-white/10
+            focus:outline-none
+            focus:border-blue-400
+            focus:ring-1 focus:ring-blue-400
+          "
+        />
+
+        {/* subtle underline glow */}
+        <div className="absolute inset-x-8 -bottom-2 h-px bg-white/10" />
+      </div>
 
       {/* BUTTON */}
       <button
         type="button"
         onClick={handleStart}
         className="
-          w-full py-3 rounded-xl
+          w-full py-3 rounded-2xl
           bg-linear-to-r from-blue-500 to-cyan-400
-          text-black font-bold
+          text-black font-semibold tracking-wide
+
+          shadow-[0_10px_40px_rgba(56,189,248,0.35)]
+          hover:scale-[1.02]
           active:scale-95
           transition
         "
@@ -62,8 +75,11 @@ const SetupScreen = ({ onStart }) => {
         Start Game
       </button>
 
-      {/* HINT TEXT */}
-      <p className="text-xs text-gray-500 mt-6">Player 2 should not look 👀</p>
+      {/* HINT */}
+      <div className="mt-8">
+        <div className="w-10 h-px bg-white/10 mx-auto mb-4" />
+        <p className="text-xs text-gray-500">Player 2 should not look 👀</p>
+      </div>
     </div>
   );
 };

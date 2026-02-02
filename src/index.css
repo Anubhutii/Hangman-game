@@ -1,2 +1,82 @@
 @import "tailwindcss";
 
+html, body {
+  overscroll-behavior: none;
+}
+
+
+/* 🚀 Bottom launch */
+@keyframes launch {
+    0% {
+        transform: translateY(100%);
+        opacity: 1;
+    }
+
+    60% {
+        transform: translateY(-55%);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-55%);
+        opacity: 0;
+    }
+}
+
+.firework-launch {
+    position: absolute;
+    bottom: 0;
+    width: 8px;
+    height: 8px;
+    animation: launch 1.6s ease-out forwards;
+}
+
+/* 💥 Bottom burst */
+@keyframes burst {
+    0% {
+        transform: rotate(var(--angle)) translateY(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: rotate(var(--angle)) translateY(-140px);
+        opacity: 0;
+    }
+}
+
+.firework-particle {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff, #facc15, #f59e0b);
+    transform-origin: center;
+    animation: burst 1.8s ease-out forwards;
+}
+
+/* ✨ Top burst */
+@keyframes topBurst {
+    0% {
+        transform: rotate(var(--angle)) translateY(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: rotate(var(--angle)) translateY(120px);
+        opacity: 0;
+    }
+}
+
+.firework-particle-top {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff, #fde68a, #f59e0b);
+    transform-origin: center;
+    animation: topBurst 1.6s ease-out forwards;
+}

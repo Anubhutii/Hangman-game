@@ -13,22 +13,20 @@ const AnimatedPart = ({ show, children }) => {
   return <animated.group scale={scale}>{children}</animated.group>;
 };
 
-/* ================= SOFT MATERIAL ================= */
+/* ================= MATERIAL (REFERENCE STYLE) ================= */
 const softMat = {
-  roughness: 0.45,
-  metalness: 0.05,
+  roughness: 0.85, // very soft, matte
+  metalness: 0.0, // no shine (important)
 };
 
 /* ================= BASE ================= */
 const Base = () => (
   <group position={[0, -1.4, 0]}>
-    {/* Bottom heavy plate */}
     <mesh>
-      <cylinderGeometry args={[1.8, 1.8, 0.18, 40]} />
+      <cylinderGeometry args={[1.9, 1.68, 0.2, 40]} />
       <meshStandardMaterial color="#6b3e1e" {...softMat} />
     </mesh>
 
-    {/* Top smaller plate */}
     <mesh position={[0, 0.15, 0]}>
       <cylinderGeometry args={[1.4, 1.4, 0.12, 40]} />
       <meshStandardMaterial color="#8b4513" {...softMat} />
@@ -39,19 +37,16 @@ const Base = () => (
 /* ================= GALLOWS ================= */
 const Pole = () => (
   <group position={[-0.9, -0.1, 0]}>
-    {/* Pole foot */}
     <mesh position={[0, -1.6, 0]}>
       <cylinderGeometry args={[0.25, 0.25, 0.25, 24]} />
       <meshStandardMaterial color="#6b3e1e" {...softMat} />
     </mesh>
 
-    {/* Main pole */}
     <mesh>
       <cylinderGeometry args={[0.15, 0.15, 3.4, 32]} />
       <meshStandardMaterial color="#8b4513" {...softMat} />
     </mesh>
 
-    {/* Pole cap */}
     <mesh position={[0, 1.7, 0]}>
       <sphereGeometry args={[0.17, 24, 24]} />
       <meshStandardMaterial color="#7a3f1d" {...softMat} />
@@ -61,13 +56,11 @@ const Pole = () => (
 
 const TopBar = () => (
   <group position={[0.2, 1.45, 0]}>
-    {/* Main bar */}
     <mesh rotation={[0, 0, Math.PI / 2]}>
       <cylinderGeometry args={[0.14, 0.14, 2.4, 32]} />
       <meshStandardMaterial color="#8b4513" {...softMat} />
     </mesh>
 
-    {/* Left rounded end */}
     <mesh position={[-1.2, 0, 0]}>
       <sphereGeometry args={[0.14, 20, 20]} />
       <meshStandardMaterial color="#7a3f1d" {...softMat} />
@@ -76,23 +69,20 @@ const TopBar = () => (
 );
 
 const Rope = () => (
-  <group position={[0.7 - 0.1, 1.01, 0]}>
-    {/* Knot */}
+  <group position={[0.6, 1.0, 0]}>
     <mesh position={[0, 0.12, 0]}>
       <sphereGeometry args={[0.07, 16, 16]} />
-      <meshStandardMaterial color="#caa24a" roughness={0.6} />
+      <meshStandardMaterial color="#caa24a" roughness={0.9} />
     </mesh>
 
-    {/* Main rope */}
     <mesh>
       <cylinderGeometry args={[0.035, 0.035, 0.7, 20]} />
-      <meshStandardMaterial color="#d4a017" roughness={0.65} />
+      <meshStandardMaterial color="#d4a017" roughness={0.9} />
     </mesh>
 
-    {/* Bottom loop (soft end) */}
     <mesh position={[0, -0.38, 0]}>
       <sphereGeometry args={[0.04, 16, 16]} />
-      <meshStandardMaterial color="#caa24a" roughness={0.65} />
+      <meshStandardMaterial color="#caa24a" roughness={0.9} />
     </mesh>
   </group>
 );
@@ -108,54 +98,47 @@ const Head = () => {
 
   useFrame((_, delta) => {
     timer.current += delta;
-
     if (timer.current > nextBlink.current) {
       const t = timer.current - nextBlink.current;
+      const s =
+        t < duration / 2
+          ? 1 - t / (duration / 2)
+          : t < duration
+            ? (t - duration / 2) / (duration / 2)
+            : 1;
 
-      if (t < duration / 2) {
-        const s = 1 - t / (duration / 2);
-        leftEye.current.scale.y = s;
-        rightEye.current.scale.y = s;
-      } else if (t < duration) {
-        const s = (t - duration / 2) / (duration / 2);
-        leftEye.current.scale.y = s;
-        rightEye.current.scale.y = s;
-      } else {
+      leftEye.current.scale.y = s;
+      rightEye.current.scale.y = s;
+
+      if (t > duration) {
         timer.current = 0;
         nextBlink.current = Math.random() * 3 + 2;
-        leftEye.current.scale.y = 1;
-        rightEye.current.scale.y = 1;
       }
     }
   });
 
   return (
     <group position={[0.9, 0.28, 0]}>
-      {/* ================= HEAD ================= */}
       <mesh>
         <sphereGeometry args={[0.25, 48, 48]} />
         <meshStandardMaterial color="#f1d9a7" {...softMat} />
       </mesh>
 
-      {/* ================= HAT CROWN ================= */}
       <mesh position={[0, 0.22, 0]}>
         <capsuleGeometry args={[0.14, 0.02, 16, 32]} />
-        <meshStandardMaterial color="#2b1b0e" roughness={0.6} metalness={0} />
+        <meshStandardMaterial color="#2b1b0e" {...softMat} />
       </mesh>
 
-      {/* ================= HAT BAND ================= */}
       <mesh position={[0, 0.18, 0.16]}>
         <cylinderGeometry args={[0.19, 0.19, 0.03, 32]} />
-        <meshStandardMaterial color="#c0392b" roughness={0.5} />
+        <meshStandardMaterial color="#c0392b" {...softMat} />
       </mesh>
 
-      {/* ================= HAT BRIM ================= */}
       <mesh position={[0, 0.14, 0]}>
         <cylinderGeometry args={[0.38, 0.38, 0.04, 40]} />
-        <meshStandardMaterial color="#2b1b0e" roughness={0.65} />
+        <meshStandardMaterial color="#2b1b0e" {...softMat} />
       </mesh>
 
-      {/* ================= EYES ================= */}
       <mesh ref={leftEye} position={[-0.07, 0.06, 0.22]}>
         <sphereGeometry args={[0.024, 24, 24]} />
         <meshStandardMaterial color="#000" />
@@ -166,10 +149,9 @@ const Head = () => {
         <meshStandardMaterial color="#000" />
       </mesh>
 
-      {/* ================= LIP ================= */}
       <mesh position={[0, -0.06, 0.22]} rotation={[0, 0, Math.PI / 2]}>
         <capsuleGeometry args={[0.03, 0.04, 16, 32]} />
-        <meshStandardMaterial color="#d35400" roughness={0.35} />
+        <meshStandardMaterial color="#d35400" roughness={0.8} />
       </mesh>
     </group>
   );
@@ -252,10 +234,11 @@ const Human = ({ wrongGuesses }) => {
 
 /* ================= SCENE ================= */
 const Scene = ({ wrongGuesses }) => (
-  
   <>
-    <ambientLight intensity={0.9} />
-    <directionalLight position={[2, 4, 5]} />
+    {/* REFERENCE STYLE LIGHTING */}
+    <ambientLight intensity={1.2} />
+    <directionalLight position={[0, 3, 4]} intensity={0.6} />
+    <directionalLight position={[0, -3, -4]} intensity={0.3} />
 
     <group position={[0, -0.3, 0]}>
       <Base />
@@ -268,7 +251,6 @@ const Scene = ({ wrongGuesses }) => (
       <AnimatedPart show={wrongGuesses >= 3}>
         <Rope />
       </AnimatedPart>
-      {/* <Human wrongGuesses={wrongGuesses} /> */}
       <group position={[-0.3, 0.05, 0]}>
         <Human wrongGuesses={wrongGuesses} />
       </group>
@@ -280,7 +262,7 @@ const Scene = ({ wrongGuesses }) => (
 
 /* ================= MAIN ================= */
 const Hangman3D = ({ wrongGuesses }) => (
-  <div className="w-full h-[300px] sm:h-[340px] md:h-[420px]">
+  <div style={{ width: "100%", height: "420px" }}>
     <Canvas camera={{ position: [0, 0, 6], fov: 45 }}>
       <Scene wrongGuesses={wrongGuesses} />
     </Canvas>
