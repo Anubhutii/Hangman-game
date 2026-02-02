@@ -11,7 +11,7 @@ function App() {
     <div
       className="
         relative
-        h-[100svh] w-full
+        h-[100dvh] w-full
         flex items-center justify-center
         text-white
         overflow-hidden
@@ -38,7 +38,7 @@ function App() {
             left-0 bottom-0
             w-[370px]
             sm:w-[400px]
-            md:w-[700px]
+            md:w-[600px]
             h-auto
             opacity-90
             md:opacity-90
