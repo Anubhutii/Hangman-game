@@ -60,7 +60,7 @@ const GameScreen = ({ word }) => {
       "
     >
       {/* TITLE */}
-      <h1 className="text-xs tracking-widest text-gray-400 mb-4">HANGMAN</h1>
+      <h1 className="text-xs tracking-widest text-gray-400">HANGMAN</h1>
 
       {/* HANGMAN */}
       <div className="flex justify-center mb-6">

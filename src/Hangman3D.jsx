@@ -252,6 +252,7 @@ const Human = ({ wrongGuesses }) => {
 
 /* ================= SCENE ================= */
 const Scene = ({ wrongGuesses }) => (
+  
   <>
     <ambientLight intensity={0.9} />
     <directionalLight position={[2, 4, 5]} />
@@ -279,7 +280,7 @@ const Scene = ({ wrongGuesses }) => (
 
 /* ================= MAIN ================= */
 const Hangman3D = ({ wrongGuesses }) => (
-  <div style={{ width: "100%", height: "420px" }}>
+  <div className="w-full h-[300px] sm:h-[340px] md:h-[420px]">
     <Canvas camera={{ position: [0, 0, 6], fov: 45 }}>
       <Scene wrongGuesses={wrongGuesses} />
     </Canvas>

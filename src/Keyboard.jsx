@@ -35,7 +35,7 @@ const Keyboard = ({ guessedLetters, onGuess }) => {
             onClick={() => onGuess(letter)}
             disabled={used}
             className={`
-              h-12 md:h-11
+              h-12 md:h-10
               rounded-lg
               font-semibold text-sm
               flex items-center justify-center
