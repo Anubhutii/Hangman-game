@@ -3,9 +3,57 @@ import SetupScreen from "./SetupScreen";
 import GameScreen from "./GameScreen";
 import bg from "./assets/bg.png";
 
+// helpers
+import { getRandomWord } from "./utils/getRandomWord";
+import { getWordHint } from "./utils/getWordHint";
+
+// 🔹 difficulty config
+const DIFFICULTY_MAP = {
+  easy: [3, 4],
+  medium: [5, 6],
+  hard: [7, 9],
+};
+
 function App() {
   const [secretWord, setSecretWord] = useState("");
   const [gameStarted, setGameStarted] = useState(false);
+  const [mode, setMode] = useState("");
+
+  // difficulty
+  const [difficulty, setDifficulty] = useState("medium");
+
+  // hint
+  const [hint, setHint] = useState("");
+  const [hintLoading, setHintLoading] = useState(false);
+
+  // 🤖 Player vs Computer
+  const startComputerGame = async () => {
+    const [min, max] = DIFFICULTY_MAP[difficulty];
+    const word = await getRandomWord(min, max);
+
+    setSecretWord(word || "HANGMAN"); // fallback only if API fails
+    setMode("computer");
+    setGameStarted(true);
+    setHint("");
+  };
+
+  // 💡 Fetch hint
+  const fetchHint = async () => {
+    if (!secretWord) return;
+
+    setHintLoading(true);
+    const meaning = await getWordHint(secretWord);
+    setHint(meaning);
+    setHintLoading(false);
+  };
+
+  const handleRestart = () => {
+    setSecretWord("");
+    setGameStarted(false);
+    setMode("");
+    setHint("");
+    setHintLoading(false);
+  };
 
   return (
     <div
@@ -52,22 +100,28 @@ function App() {
           <SetupScreen
             onStart={(word) => {
               setSecretWord(word.toUpperCase());
+              setMode("player");
               setGameStarted(true);
+              setHint("");
             }}
+            onComputerStart={startComputerGame}
+            difficulty={difficulty}
+            setDifficulty={setDifficulty}
           />
         ) : (
           <GameScreen
             word={secretWord}
-            onRestart={() => {
-              setSecretWord("");
-              setGameStarted(false);
-            }}
+            mode={mode}
+            difficulty={difficulty}
+            hint={hint}
+            onGetHint={fetchHint}
+            hintLoading={hintLoading}
+            onRestart={handleRestart}
           />
         )}
       </div>
     </div>
   );
 }
-
 
 export default App;

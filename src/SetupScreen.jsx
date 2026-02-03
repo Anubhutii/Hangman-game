@@ -1,6 +1,11 @@
 import { useState, useRef } from "react";
 
-const SetupScreen = ({ onStart }) => {
+const SetupScreen = ({
+  onStart,
+  onComputerStart,
+  difficulty,
+  setDifficulty,
+}) => {
   const [word, setWord] = useState("");
   const hasAlerted = useRef(false);
 
@@ -13,9 +18,7 @@ const SetupScreen = ({ onStart }) => {
       hasAlerted.current = true;
     }
 
-    // Clean input → only A–Z
     const cleanedValue = rawValue.replace(/[^a-zA-Z]/g, "").toUpperCase();
-
     setWord(cleanedValue);
   };
 
@@ -45,17 +48,42 @@ const SetupScreen = ({ onStart }) => {
       "
     >
       {/* TITLE */}
-      <h1 className="text-xs tracking-[0.25em] text-gray-400 mb-2">PLAYER 1</h1>
+      <h1 className="text-xs tracking-[0.25em] text-gray-400 mb-2">
+        PLAYER SETUP
+      </h1>
 
-      <p className="text-sm text-gray-500 mb-10">Set the secret word</p>
+      <p className="text-sm text-gray-500 mb-6">
+        Choose game mode & difficulty
+      </p>
 
-      {/* INPUT */}
-      <div className="relative mb-8">
+      {/* 🔥 DIFFICULTY SELECTOR */}
+      <div className="flex justify-center gap-3 mb-8">
+        {["easy", "medium", "hard"].map((level) => (
+          <button
+            key={level}
+            onClick={() => setDifficulty(level)}
+            className={`
+              px-4 py-1.5 rounded-full text-xs tracking-widest
+              transition
+              ${
+                difficulty === level
+                  ? "bg-white text-black"
+                  : "bg-white/10 text-gray-400 hover:bg-white/20"
+              }
+            `}
+          >
+            {level.toUpperCase()}
+          </button>
+        ))}
+      </div>
+
+      {/* PLAYER VS PLAYER INPUT */}
+      <div className="relative mb-6">
         <input
           type="text"
           value={word}
           onChange={handleChange}
-          placeholder="Enter a word"
+          placeholder="Player 1: Enter a word"
           autoComplete="off"
           autoCorrect="off"
           autoCapitalize="characters"
@@ -73,11 +101,10 @@ const SetupScreen = ({ onStart }) => {
             focus:ring-1 focus:ring-blue-400
           "
         />
-
         <div className="absolute inset-x-8 -bottom-2 h-px bg-white/10" />
       </div>
 
-      {/* BUTTON */}
+      {/* PLAYER VS PLAYER BUTTON */}
       <button
         type="button"
         onClick={handleStart}
@@ -90,15 +117,39 @@ const SetupScreen = ({ onStart }) => {
           hover:scale-[1.02]
           active:scale-95
           transition
+          mb-4
         "
       >
-        Start Game
+        Player vs Player
       </button>
 
-      {/* HINT */}
+      {/* OR */}
+      <p className="text-xs text-gray-500 mb-4">OR</p>
+
+      {/* PLAYER VS COMPUTER BUTTON */}
+      <button
+        type="button"
+        onClick={onComputerStart}
+        className="
+          w-full py-3 rounded-2xl
+          bg-linear-to-r from-emerald-400 to-lime-400
+          text-black font-semibold tracking-wide
+
+          shadow-[0_10px_40px_rgba(52,211,153,0.35)]
+          hover:scale-[1.02]
+          active:scale-95
+          transition
+        "
+      >
+        Player vs Computer 🤖
+      </button>
+
+      {/* INFO */}
       <div className="mt-8">
         <div className="w-10 h-px bg-white/10 mx-auto mb-4" />
-        <p className="text-xs text-gray-500">Player 2 should not look 👀</p>
+        <p className="text-xs text-gray-500">
+          Computer mode uses difficulty-based random words
+        </p>
       </div>
     </div>
   );
