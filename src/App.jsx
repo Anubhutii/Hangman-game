@@ -11,13 +11,14 @@ function App() {
     <div
       className="
         relative
-        h-[100dvh] w-full
+        h-screen min-h-[100svh]
+        w-full
         flex items-center justify-center
         text-white
         overflow-hidden
       "
     >
-      {/* 🔹 GRADIENT (ALWAYS AT BACK) */}
+      {/* 🔹 GRADIENT */}
       <div
         className="
           absolute inset-0
@@ -28,7 +29,6 @@ function App() {
         "
       />
 
-      {/* 🔹 DECORATIVE IMAGE (ONLY SETUP SCREEN) */}
       {!gameStarted && (
         <img
           src={bg}
@@ -41,14 +41,12 @@ function App() {
             md:w-[600px]
             h-auto
             opacity-90
-            md:opacity-90
             pointer-events-none
             select-none
           "
         />
       )}
 
-      {/* 🔹 CONTENT */}
       <div className="relative z-10 w-full flex items-center justify-center">
         {!gameStarted ? (
           <SetupScreen
@@ -58,11 +56,18 @@ function App() {
             }}
           />
         ) : (
-          <GameScreen word={secretWord} />
+          <GameScreen
+            word={secretWord}
+            onRestart={() => {
+              setSecretWord("");
+              setGameStarted(false);
+            }}
+          />
         )}
       </div>
     </div>
   );
 }
+
 
 export default App;

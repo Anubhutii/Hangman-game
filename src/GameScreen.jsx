@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Keyboard from "./Keyboard";
 import Hangman3D from "./Hangman3D";
 
@@ -10,56 +10,10 @@ const COLORS = [
   "text-indigo-400 border-indigo-400",
 ];
 
-/* 🪔 DIWALI FIREWORKS – TOP + BOTTOM */
-const DiwaliFireworks = () => {
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {/* BOTTOM */}
-      {Array.from({ length: 3 }).map((_, i) => (
-        <div
-          key={`bottom-${i}`}
-          className="absolute bottom-0 firework-launch"
-          style={{
-            left: `${20 + i * 30}%`,
-            animationDelay: `${i * 0.6}s`,
-          }}
-        >
-          {Array.from({ length: 16 }).map((_, j) => (
-            <span
-              key={j}
-              className="firework-particle"
-              style={{ "--angle": `${j * (360 / 16)}deg` }}
-            />
-          ))}
-        </div>
-      ))}
-
-      {/* TOP */}
-      {Array.from({ length: 2 }).map((_, i) => (
-        <div
-          key={`top-${i}`}
-          className="absolute top-0 firework-top"
-          style={{
-            left: `${30 + i * 35}%`,
-            animationDelay: `${i * 0.8}s`,
-          }}
-        >
-          {Array.from({ length: 12 }).map((_, j) => (
-            <span
-              key={j}
-              className="firework-particle-top"
-              style={{ "--angle": `${j * (360 / 12)}deg` }}
-            />
-          ))}
-        </div>
-      ))}
-    </div>
-  );
-};
-
-const GameScreen = ({ word }) => {
+const GameScreen = ({ word, onRestart }) => {
   const [guessedLetters, setGuessedLetters] = useState([]);
   const [wrongGuesses, setWrongGuesses] = useState(0);
+  const [showResult, setShowResult] = useState(false);
 
   const [accentColor] = useState(
     () => COLORS[Math.floor(Math.random() * COLORS.length)],
@@ -73,13 +27,31 @@ const GameScreen = ({ word }) => {
 
   const isLose = wrongGuesses >= MAX_WRONG;
 
+  /* 🔥 DELAY RESULT CARD */
+  useEffect(() => {
+    if (isWin || isLose) {
+      const timer = setTimeout(() => {
+        setShowResult(true);
+      }, 350);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isWin, isLose]);
+
   const handleGuess = (letter) => {
     if (guessedLetters.includes(letter)) return;
     setGuessedLetters([...guessedLetters, letter]);
     if (!word.includes(letter)) setWrongGuesses((p) => p + 1);
   };
 
-  const handleRestart = () => window.location.reload();
+  const handleRestart = () => {
+    setGuessedLetters([]);
+    setWrongGuesses(0);
+    setShowResult(false);
+
+    // Parent ko batao game restart karna hai
+    onRestart();
+  };
 
   return (
     <div
@@ -99,23 +71,17 @@ const GameScreen = ({ word }) => {
         HANGMAN
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start md:items-center">
-        {/* LEFT – HANGMAN */}
-        <div
-          className="
-            flex justify-center items-end
-            h-[300px] md:h-[520px] md:pb-20
-          "
-        >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+        {/* LEFT */}
+        <div className="flex justify-center items-end h-[300px] md:h-[520px] md:pb-20">
           <Hangman3D wrongGuesses={wrongGuesses} />
         </div>
 
         {/* RIGHT */}
         <div className="relative md:min-h-[420px] flex flex-col justify-start md:justify-center">
-          {!isWin && !isLose && (
-            <div className="space-y-4 md:space-y-6">
-              <p className="text-xs text-gray-500">Player 2</p>
-
+          {/* 🎮 GAMEPLAY (stays visible till result shows) */}
+          {!showResult && (
+            <div className="space-y-6">
               <div className="flex justify-center gap-3 text-3xl md:text-4xl font-semibold">
                 {word.split("").map((l, i) => (
                   <span
@@ -137,44 +103,61 @@ const GameScreen = ({ word }) => {
             </div>
           )}
 
-          {(isWin || isLose) && (
+          {/* 🎉 RESULT CARD */}
+          {showResult && (
             <div
               className="
-                fixed inset-0 z-50
-                md:absolute md:inset-0 md:z-auto
+                relative mt-10 z-20
+                animate-slide-up
+
                 flex flex-col items-center justify-center
                 text-center
-                bg-black/70
-                backdrop-blur-sm
-                md:rounded-2xl
+
+                bg-gradient-to-br
+from-blue-500/40
+via-cyan-400/30
+to-sky-500/40
+backdrop-blur-md
+                border border-white/20
+                rounded-3xl
+                px-8 py-10
+                shadow-[0_20px_60px_rgba(0,0,0,0.45)]
+
+                md:absolute md:inset-0
+                md:mt-0
+                md:bg-gradient-to-br
+md:from-blue-500/40
+md:via-cyan-400/30
+md:to-sky-500/40
+md:backdrop-blur-md
+
+
               "
             >
-              {isWin && <DiwaliFireworks />}
-
-              <h2 className="text-4xl font-semibold text-white mb-3 relative z-10">
-                {isWin ? "Level Complete" : "Level Failed"}
+              <h2 className="text-4xl font-semibold text-white mb-3">
+                {isWin ? "Level Complete 🎉" : "Level Failed 😔"}
               </h2>
 
-              <p className="text-gray-300 mb-6 max-w-xs relative z-10">
+              <p className="text-gray-300 mb-4 max-w-xs">
                 {isWin
                   ? "You guessed the word correctly."
                   : "Better luck next time."}
               </p>
 
-              {isLose && (
-                <p className="text-sm text-gray-400 mb-6 relative z-10">
-                  Word was <span className="text-white">{word}</span>
-                </p>
-              )}
+              <p className="text-sm text-gray-400 mb-6">
+                Word was{" "}
+                <span className="text-white tracking-widest">{word}</span>
+              </p>
 
               <button
                 onClick={handleRestart}
                 className="
-                  relative z-10
-                  px-8 py-3 rounded-xl
+                  px-10 py-3 rounded-xl
                   bg-white/90 text-gray-900
                   text-sm font-medium
-                  hover:bg-white transition
+                  hover:bg-white
+                  active:scale-95
+                  transition
                 "
               >
                 Play Again

@@ -1,15 +1,32 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const SetupScreen = ({ onStart }) => {
   const [word, setWord] = useState("");
+  const hasAlerted = useRef(false);
+
+  const handleChange = (e) => {
+    const rawValue = e.target.value;
+
+    // 🚨 Alert only once for invalid input
+    if (/[^a-zA-Z]/.test(rawValue) && !hasAlerted.current) {
+      alert("❌ Only alphabets are allowed. Numbers are not allowed.");
+      hasAlerted.current = true;
+    }
+
+    // Clean input → only A–Z
+    const cleanedValue = rawValue.replace(/[^a-zA-Z]/g, "").toUpperCase();
+
+    setWord(cleanedValue);
+  };
 
   const handleStart = () => {
     document.activeElement.blur();
 
     if (word.trim().length < 2) {
-      alert("Please enter a valid word");
+      alert("Please enter a valid word (min 2 letters)");
       return;
     }
+
     onStart(word);
   };
 
@@ -37,8 +54,12 @@ const SetupScreen = ({ onStart }) => {
         <input
           type="text"
           value={word}
-          onChange={(e) => setWord(e.target.value)}
+          onChange={handleChange}
           placeholder="Enter a word"
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="characters"
+          inputMode="text"
           className="
             w-full px-4 py-4
             rounded-2xl
@@ -53,7 +74,6 @@ const SetupScreen = ({ onStart }) => {
           "
         />
 
-        {/* subtle underline glow */}
         <div className="absolute inset-x-8 -bottom-2 h-px bg-white/10" />
       </div>
 
